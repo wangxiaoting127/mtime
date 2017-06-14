@@ -1,0 +1,27 @@
+{
+  "name": "mtime",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "eponajs": "^1.0.0",
+    "korok": "^1.0.0",
+    "sorting-hat": "^1.0.0",
+    "typhoeus": "^1.2.3",
+    "warpipe": "^1.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wangxiaoting127/mtime.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wangxiaoting127/mtime/issues"
+  },
+  "homepage": "https://github.com/wangxiaoting127/mtime#readme"
+}
