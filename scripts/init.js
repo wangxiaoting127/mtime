@@ -15,3 +15,5 @@ function usage() {
   } while ((ti += config.ID_PER) < config.MAX_MOVIE_ID)  
   console.log('mtime movies id added')
 }
+
+movies()

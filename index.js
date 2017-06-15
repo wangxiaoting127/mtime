@@ -1,6 +1,6 @@
 let crawler = require("./crawlers/movie").default
 
-function getId() {
+async function getId() {
       return redis.rpoplpushAsync('mtime', 'mtime.pending')
   }
 function crawlCompleted(index) {
@@ -13,8 +13,8 @@ function requeue(index) {
     return redis.rpushAsync('mtime', updateId(index))
   }
 
-function save(){
-
+function save(ret){
+console.log(ret)
 }
 function error(){
     return true
@@ -24,7 +24,38 @@ function crawl(index){
     return crawler(expandIds(index))
 }
 
+function minutes(n){
+    return 1000*60*n
+}
+function crawlAllCompleted(){
+    setTimeout(run,minutes(3))
+}
 async function run() {
-    console.log(await crawler())
+    // console.log(await crawler())
+    let index=await getId()
+    if(index==null ||index===0){crawlAllCompleted()}
+    await crawler(index)
+      .then(async function (ret){
+        if(await save(ret)){
+          await crawlCompleted(index)
+        }else{
+          console.log(`crawl ${index} error`)
+          await requeue(index)
+        }
+        setImmediate(run)
+      })
+      .catch(async function(err){
+        if(await error(err)){
+          console.log('error but catch,retry now!')
+          await rqueue(index)
+          setImmediate(run)
+        }else{
+          console.log(new Date())
+          console.log('undefined error type')
+          console.log(error)
+          process.exit(1)
+        }
+
+      })
 }
 run()
