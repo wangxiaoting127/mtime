@@ -12,9 +12,10 @@ export function log(x){
   console.log(util.inspect(x, { showHidden: true, depth: null }))
 }
 
-export function postUrl(index) {
+export function expandIds(index) {
   //[ 'http://bbs.tianya.cn/list-free-1.shtml' ]
   let s = split(index, '_', 1)
+  let ind=Number(s)
   console.log("movieUrl :",s)
-  return s
+  return expand(`${ind}..${ind+config.ID_PER-1}`)
 }

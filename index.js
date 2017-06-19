@@ -1,3 +1,5 @@
+import { redis, es, config, mongo } from "./_base"
+import {updateId, log, expandIds} from "./scripts/utils"
 let crawler = require("./crawlers/movie").default
 
 async function getId() {
@@ -33,8 +35,11 @@ function crawlAllCompleted(){
 async function run() {
     // console.log(await crawler())
     let index=await getId()
-    if(index==null ||index===0){crawlAllCompleted()}
-    await crawler(index)
+    console.log('redis movies id is:'+index)
+    if(index==null ||index===0){
+      crawlAllCompleted()
+    }else{
+      await crawl(index)
       .then(async function (ret){
         if(await save(ret)){
           await crawlCompleted(index)
@@ -47,7 +52,7 @@ async function run() {
       .catch(async function(err){
         if(await error(err)){
           console.log('error but catch,retry now!')
-          await rqueue(index)
+          await requeue(index)
           setImmediate(run)
         }else{
           console.log(new Date())
@@ -57,5 +62,7 @@ async function run() {
         }
 
       })
+    }
+    
 }
 run()

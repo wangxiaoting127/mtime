@@ -10,7 +10,7 @@ import { MongoClient } from 'mongodb'
 Promise.promisifyAll(Redis.RedisClient.prototype)
 Promise.promisifyAll(Redis.Multi.prototype)
 
-export const redis=Redis.createClient(config.redisOpts)
+export let redis=Redis.createClient(config.redisOpts)
 
 redis.on("error",function(err){
     console.log("Error"+err)

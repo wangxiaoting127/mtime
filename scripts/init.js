@@ -8,7 +8,7 @@ function usage() {
 
 }
  
- async function movies() {
+async function movies() {
   let ti = config.MIN_MOVIE_ID
   do {
     await redis.lpushAsync('mtime', `${ti}_${Date.now()}`)

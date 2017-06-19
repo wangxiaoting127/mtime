@@ -3,7 +3,7 @@ import { korok } from "korok"
 import { trim, map, replace } from "lodash"
 let movieids=[40205,40206]
 export default async function (movieids) {
-  console.log(movieids)
+  console.log("movieids"+movieids)
  let movieUrls = movieids.map(x => {
     return {
         default: { _id: x, created_at: new Date }

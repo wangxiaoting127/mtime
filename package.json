@@ -4,8 +4,11 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "bluebird": "^3.5.0",
     "eponajs": "^1.0.0",
+    "expand-range": "^2.0.1",
     "korok": "^1.0.0",
+    "redis": "^2.7.1",
     "sorting-hat": "^1.0.0",
     "typhoeus": "^1.2.3",
     "warpipe": "^1.0.0"
