@@ -1,7 +1,7 @@
 import { redis, config, mongo } from "./_base"
 import { updateId, log, expandIds } from "./scripts/utils"
 let crawler = require("./crawlers/movie").default
-let Companies=global.mongo.collection(companies)
+
 
 
 async function getId() {
@@ -18,18 +18,26 @@ function requeue(index) {
 }
 
 async function save(ret) {
-  console.log(ret)
-  if (ret.length == 0) { return true }
-  let saved = await Companies.insertMany(ret, { ordered: false })
-  return saved.result.ok==1
+  console.log('ok!==========================================')
+  let sret = ret
+    .filter(x => x.title)
+    .map(x => {
+      x.created_at = new Date
+      return x
+    })
+    console.log(sret)
+  if (sret.length == 0) { return true }
+  //？？？？
+  let saved = await Companies.insertMany(sret, { ordered: false })
+  console.log('saved'+saved)
+  return saved.result.ok == 1
 
 }
-function error() {
+function error(err) {
   return true
 }
 
 function crawl(index) {
-  console.log(expandIds(index))
   return crawler(expandIds(index))
 }
 
@@ -48,6 +56,7 @@ async function run() {
   } else {
     await crawl(index)
       .then(async function (ret) {
+        console.log('返回爬到结果 ' + ret)
         if (await save(ret)) {
           await crawlCompleted(index)
         } else {
@@ -73,9 +82,10 @@ async function run() {
 
 }
 
-mongo.then(x=>{
-  global.mongo=x
+mongo.then(x => {
+  global.mongo = x
+  let Companies = global.mongo.collection("companies")
   run(process.argv[2])
-}).catch(x=>{
+}).catch(x => {
   console.log(x)
 })
