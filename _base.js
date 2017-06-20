@@ -16,4 +16,4 @@ redis.on("error",function(err){
     console.log("Error"+err)
 })
 
-// export
+export let mongo=MongoClient.connect(config.mongoUrl)

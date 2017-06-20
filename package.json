@@ -8,6 +8,7 @@
     "eponajs": "^1.0.0",
     "expand-range": "^2.0.1",
     "korok": "^1.0.0",
+    "mongodb": "^2.2.29",
     "redis": "^2.7.1",
     "sorting-hat": "^1.0.0",
     "typhoeus": "^1.2.3",

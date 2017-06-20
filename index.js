@@ -1,60 +1,67 @@
-import { redis, es, config, mongo } from "./_base"
-import {updateId, log, expandIds} from "./scripts/utils"
+import { redis, config, mongo } from "./_base"
+import { updateId, log, expandIds } from "./scripts/utils"
 let crawler = require("./crawlers/movie").default
+let Companies=global.mongo.collection(companies)
+
 
 async function getId() {
-      return redis.rpoplpushAsync('mtime', 'mtime.pending')
-  }
+  return redis.rpoplpushAsync('mtime', 'mtime.pending')
+}
 function crawlCompleted(index) {
-    return redis.multi()
-      .lpush('mtime.completed', updateId(index))
-      .lrem('mtime.pending', 0, index)
-      .execAsync()
-  }
+  return redis.multi()
+    .lpush('mtime.completed', updateId(index))
+    .lrem('mtime.pending', 0, index)
+    .execAsync()
+}
 function requeue(index) {
-    return redis.rpushAsync('mtime', updateId(index))
-  }
-
-function save(ret){
-console.log(ret)
-}
-function error(){
-    return true
+  return redis.rpushAsync('mtime', updateId(index))
 }
 
-function crawl(index){
-    return crawler(expandIds(index))
+async function save(ret) {
+  console.log(ret)
+  if (ret.length == 0) { return true }
+  let saved = await Companies.insertMany(ret, { ordered: false })
+  return saved.result.ok==1
+
+}
+function error() {
+  return true
 }
 
-function minutes(n){
-    return 1000*60*n
+function crawl(index) {
+  console.log(expandIds(index))
+  return crawler(expandIds(index))
 }
-function crawlAllCompleted(){
-    setTimeout(run,minutes(3))
+
+function minutes(n) {
+  return 1000 * 60 * n
+}
+function crawlAllCompleted() {
+  setTimeout(run, minutes(3))
 }
 async function run() {
-    // console.log(await crawler())
-    let index=await getId()
-    console.log('redis movies id is:'+index)
-    if(index==null ||index===0){
-      crawlAllCompleted()
-    }else{
-      await crawl(index)
-      .then(async function (ret){
-        if(await save(ret)){
+  // console.log(await crawler())
+  let index = await getId()
+  console.log('//redis movies id is:' + index)
+  if (index == null || index === 0) {
+    crawlAllCompleted()
+  } else {
+    await crawl(index)
+      .then(async function (ret) {
+        if (await save(ret)) {
           await crawlCompleted(index)
-        }else{
+        } else {
           console.log(`crawl ${index} error`)
           await requeue(index)
         }
         setImmediate(run)
       })
-      .catch(async function(err){
-        if(await error(err)){
+      .catch(async function (err) {
+        if (await error(err)) {
           console.log('error but catch,retry now!')
           await requeue(index)
           setImmediate(run)
-        }else{
+        } else {
           console.log(new Date())
           console.log('undefined error type')
           console.log(error)
@@ -62,7 +69,13 @@ async function run() {
         }
 
       })
-    }
-    
+  }
+
 }
-run()
+
+mongo.then(x=>{
+  global.mongo=x
+  run(process.argv[2])
+}).catch(x=>{
+  console.log(x)
+})
