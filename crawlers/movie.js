@@ -17,19 +17,21 @@ export default async function (movieids) {
       sels: '.wp49:nth-of-type(1) ul li *',
       nodes: {
         _id: 'a::href|numbers',
-        cname: 'a::text()|trim'
+        cname: 'a::text()|trim',
+        country:'span::text()|trim'
       }
     },
     publisher: {
       sels: '.wp49:nth-of-type(2) ul li *',
       nodes: {
         _id: 'a::href|numbers',
-        cname: 'a::text()|trim'
+        cname: 'a::text()|trim',
+        country:'span::text()|trim'
       }
     }
   }, {
-      // concurrent: 2
-      rateLimit: 1000
+      concurrent: 20
+      // rateLimit: 1000
     })
     // ret.pro_company=ret.pro_company.map(x=>{
     //     let y=x.a+x.span

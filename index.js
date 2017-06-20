@@ -18,6 +18,7 @@ function requeue(index) {
 }
 
 async function save(ret) {
+  let Companies = global.mongo.collection("companies")
   console.log('ok!==========================================')
   let sret = ret
     .filter(x => x.title)
@@ -27,7 +28,6 @@ async function save(ret) {
     })
     console.log(sret)
   if (sret.length == 0) { return true }
-  //？？？？
   let saved = await Companies.insertMany(sret, { ordered: false })
   console.log('saved'+saved)
   return saved.result.ok == 1
@@ -84,7 +84,7 @@ async function run() {
 
 mongo.then(x => {
   global.mongo = x
-  let Companies = global.mongo.collection("companies")
+  
   run(process.argv[2])
 }).catch(x => {
   console.log(x)
