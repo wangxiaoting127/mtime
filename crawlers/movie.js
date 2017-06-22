@@ -1,6 +1,6 @@
 import * as Epona from "eponajs"
 import { korok } from "korok"
-import { trim, map, replace } from "lodash"
+import { trim, map, replace, compact,unescape } from "lodash"
 
 export default async function (movieids) {
   let movieUrls = movieids.map(x => {
@@ -30,23 +30,46 @@ export default async function (movieids) {
       }
     },
     cost: {
-      sels: '.db_movieother_2 dd::$',
-      filters: function ($) {
-        console.log($)
-        let s = []
-        $.map((k, v) => {
-          if (v.children[0].data === "制作成本") {
-            s = v.next.data
-          } else {
-            s = null
-          }
-        })
-        console.log(s)
-      }
+      sels: '.db_movieother_2 dd::$ ',
+      filters:function (x) {
+        if (x._root) {
+           let s=x._root.map(x => {
+            if (x.children[1].children[0].data === "制作成本：") {
+              let p = x.children.map(x => {
+                if (x.name === "p") {
+                  return x
+                }
+              })
+              // console.log(compact(p)[0].children[0].data)
+              return compact(p)[0].children[0].data
+            }
 
+          })
+          console.log(compact(s))   
+          return compact(s)[0]
+        }
+      }
     },
     shooting_date: {
-      sels: '.db_movieother_2 dl:nth-of-type(2) dd::text()'
+      sels: '.db_movieother_2 dd::$ ',
+      filters:function (x) {
+        if (x._root) {
+           let s=x._root.map(x => {
+            if (x.children[1].children[0].data === "拍摄日期：") {
+              let p = x.children.map(x => {
+                if (x.name === "p") {
+                  return x
+                }
+              })
+              // console.log(compact(p)[0].children[0].data)
+              return compact(p)[0].children[0].data
+            }
+
+          })
+          console.log(compact(s))   
+          return compact(s)[0]
+        }
+      }
     }
   }, {
       concurrent: 20
@@ -61,17 +84,8 @@ export default async function (movieids) {
   //     let y=x.a+x.span
   //    return  x=y.toString().replace('&nbsp;&nbsp;','')
   // })
-  // ret.filter(x => x).map(x => {
 
-  //   if (x.cost) {
-  //     let cost = x.cost.match(/制作成本(.*)estimated/g)
-  //     x.cost=cost
-  //     let shooting_date = x.shooting_date.match(/\d{4}年.*(\t?)/g)
-  //     x.shooting_date = shooting_date
-  //   }
 
-  // })
-
-  console.log(ret)
+  // console.log(ret)
   return ret
 }
