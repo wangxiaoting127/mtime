@@ -84,7 +84,6 @@ async function run() {
 
 mongo.then(x => {
   global.mongo = x
-  
   run(process.argv[2])
 }).catch(x => {
   console.log(x)
